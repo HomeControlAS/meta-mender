@@ -24,18 +24,19 @@ MENDER_BOOT_PART_MOUNT_LOCATION_mender-grub_mender-bios = "/boot/grub"
 # Update fstab for Mender
 ROOTFS_POSTPROCESS_COMMAND_append = " mender_update_fstab_file;"
 mender_update_fstab_file() {
-    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'mender-image-ubi', 'true', 'false', d)}; then
-        if [ "${MENDER_BOOT_PART_SIZE_MB}" != "0" ] && [ -n "${MENDER_BOOT_PART}" ]; then
-            echo "# Where the U-Boot environment resides; for devices with SD card support ONLY!" >> ${IMAGE_ROOTFS}${sysconfdir}/fstab
-            mkdir -p ${IMAGE_ROOTFS}/${MENDER_BOOT_PART_MOUNT_LOCATION}
-            printf "%-20s %-20s %-10s %-21s %-2s %s\n" ${MENDER_BOOT_PART} ${MENDER_BOOT_PART_MOUNT_LOCATION} ${MENDER_BOOT_PART_FSTYPE} defaults,sync 0 2 >> ${IMAGE_ROOTFS}${sysconfdir}/fstab
-        else
-            bbdebug 2 "MENDER_BOOT_PART not applicable. Not adding to fstab..."
-        fi
-    fi
+    # HC change: this part is commented out to avoid mounting /uboot partition
+    # if ! ${@bb.utils.contains('DISTRO_FEATURES', 'mender-image-ubi', 'true', 'false', d)}; then
+    #     if [ "${MENDER_BOOT_PART_SIZE_MB}" != "0" ] && [ -n "${MENDER_BOOT_PART}" ]; then
+    #         echo "# Where the U-Boot environment resides; for devices with SD card support ONLY!" >> ${IMAGE_ROOTFS}${sysconfdir}/fstab
+    #         mkdir -p ${IMAGE_ROOTFS}/${MENDER_BOOT_PART_MOUNT_LOCATION}
+    #         printf "%-20s %-20s %-10s %-21s %-2s %s\n" ${MENDER_BOOT_PART} ${MENDER_BOOT_PART_MOUNT_LOCATION} ${MENDER_BOOT_PART_FSTYPE} defaults,sync 0 2 >> ${IMAGE_ROOTFS}${sysconfdir}/fstab
+    #     else
+    #         bbdebug 2 "MENDER_BOOT_PART not applicable. Not adding to fstab..."
+    #     fi
+    # fi
 
     mkdir -p ${IMAGE_ROOTFS}/data
-    printf "%-20s %-20s %-10s %-21s %-2s %s\n" ${MENDER_DATA_PART} /data ${MENDER_DATA_PART_FSTYPE} defaults,data=journal 0 2 >> ${IMAGE_ROOTFS}${sysconfdir}/fstab
+    printf "%-20s %-20s %-10s %-21s %-2s %s\n" ${MENDER_DATA_PART} /data ${MENDER_DATA_PART_FSTYPE} defaults,data=journal,noatime 0 2 >> ${IMAGE_ROOTFS}${sysconfdir}/fstab
 }
 
 # Setup state script version file.
