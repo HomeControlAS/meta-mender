@@ -36,7 +36,7 @@ mender_update_fstab_file() {
     # fi
 
     mkdir -p ${IMAGE_ROOTFS}/data
-    printf "%-20s %-20s %-10s %-21s %-2s %s\n" ${MENDER_DATA_PART} /data ${MENDER_DATA_PART_FSTYPE} defaults,data=journal,noatime 0 2 >> ${IMAGE_ROOTFS}${sysconfdir}/fstab
+    printf "%-20s %-20s %-10s %-21s %-2s %s\n" ${MENDER_DATA_PART} /data ${MENDER_DATA_PART_FSTYPE} defaults,data=journal,noatime,x-systemd.growfs 0 2 >> ${IMAGE_ROOTFS}${sysconfdir}/fstab
 }
 
 # Setup state script version file.
